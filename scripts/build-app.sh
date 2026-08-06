@@ -11,8 +11,8 @@ app_name="Remap Keys for Polish Language"
 legacy_app_name="Remap Keys for PL Language"
 bundle_id="com.local.RemapKeysForPLLanguage.menubar"
 exec_name="RemapKeysForPLLanguageMenuBar"
-app_version="${APP_VERSION:-1.2}"
-app_build="${APP_BUILD:-1.2}"
+app_version="${APP_VERSION:-1.3}"
+app_build="${APP_BUILD:-1.3}"
 app_dir="$out_dir/$app_name.app"
 legacy_app_dir="$out_dir/$legacy_app_name.app"
 contents_dir="$app_dir/Contents"
@@ -23,6 +23,8 @@ exec_path="$macos_dir/$exec_name"
 build_dir="$project_dir/.build"
 module_cache_dir="$build_dir/module-cache"
 sdk_path="/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk"
+deployment_target="${MACOSX_DEPLOYMENT_TARGET:-13.0}"
+target_triple="$(/usr/bin/uname -m)-apple-macosx$deployment_target"
 iconset_dir="$build_dir/AppIcon.iconset"
 icon_1024="$build_dir/AppIcon-1024.png"
 icon_generator_bin="$build_dir/generate-icon"
@@ -39,6 +41,7 @@ icon_file_value="AppIcon"
 /usr/bin/swiftc \
   -O \
   -parse-as-library \
+  -target "$target_triple" \
   -sdk "$sdk_path" \
   -module-cache-path "$module_cache_dir" \
   -framework Cocoa \
@@ -48,6 +51,7 @@ icon_file_value="AppIcon"
 
 /usr/bin/swiftc \
   -O \
+  -target "$target_triple" \
   -sdk "$sdk_path" \
   -module-cache-path "$module_cache_dir" \
   -framework AppKit \
@@ -99,6 +103,8 @@ cat > "$plist_path" << PLIST
     <string>$app_build</string>
     <key>LSUIElement</key>
     <true/>
+    <key>LSMinimumSystemVersion</key>
+    <string>$deployment_target</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 </dict>

@@ -6,7 +6,9 @@ legacy_app_name="Remap Keys for PL Language"
 launch_label="com.local.RemapKeysForPLLanguage.MenuBar"
 
 app_path="$HOME/Applications/$app_name.app"
+system_app_path="/Applications/$app_name.app"
 legacy_app_path="$HOME/Applications/$legacy_app_name.app"
+legacy_system_app_path="/Applications/$legacy_app_name.app"
 fallback_app_path="$HOME/Library/Application Support/Remap Keys for Polish Language/$app_name.app"
 legacy_fallback_app_path="$HOME/Library/Application Support/Remap Keys for PL Language/$legacy_app_name.app"
 plist_path="$HOME/Library/LaunchAgents/$launch_label.plist"
@@ -17,6 +19,7 @@ uid="$(/usr/bin/id -u)"
 /usr/bin/pkill -f "RemapKeysForPLLanguageMenuBar" >/dev/null 2>&1 || true
 /bin/rm -f "$plist_path"
 /bin/rm -rf "$app_path" "$legacy_app_path"
+/bin/rm -rf "$system_app_path" "$legacy_system_app_path"
 /bin/rm -rf "$fallback_app_path" "$legacy_fallback_app_path"
 /bin/rmdir "$HOME/Library/Application Support/Remap Keys for Polish Language" >/dev/null 2>&1 || true
 /bin/rmdir "$HOME/Library/Application Support/Remap Keys for PL Language" >/dev/null 2>&1 || true

@@ -7,6 +7,7 @@ private struct MappingPair {
 
 private enum LaunchAgentConfig {
     static let label = "com.local.RemapKeysForPLLanguage.MenuBar"
+    static let bundleIdentifier = "com.local.RemapKeysForPLLanguage.menubar"
 
     static var plistURL: URL {
         URL(fileURLWithPath: NSHomeDirectory())
@@ -186,7 +187,6 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
         if let button = statusItem.button {
             button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Keyboard remapping")
             button.image?.isTemplate = true
-            button.toolTip = "Remap Keys for Polish Language"
         }
 
         let titleItem = NSMenuItem(title: "Remap Keys for Polish Language", action: nil, keyEquivalent: "")
@@ -277,14 +277,6 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
         let uid = String(getuid())
 
         if enabled {
-            guard let executablePath = Bundle.main.executablePath else {
-                throw NSError(
-                    domain: "RemapKeysMenuBar",
-                    code: 1,
-                    userInfo: [NSLocalizedDescriptionKey: "Could not resolve app executable path"]
-                )
-            }
-
             try FileManager.default.createDirectory(
                 at: plistURL.deletingLastPathComponent(),
                 withIntermediateDirectories: true
@@ -299,7 +291,9 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
                 <string>\(LaunchAgentConfig.label)</string>
                 <key>ProgramArguments</key>
                 <array>
-                    <string>\(executablePath)</string>
+                    <string>/usr/bin/open</string>
+                    <string>-b</string>
+                    <string>\(LaunchAgentConfig.bundleIdentifier)</string>
                 </array>
                 <key>RunAtLoad</key>
                 <true/>

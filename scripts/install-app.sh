@@ -10,13 +10,17 @@ app_name="Remap Keys for Polish Language"
 legacy_app_name="Remap Keys for PL Language"
 exec_name="RemapKeysForPLLanguageMenuBar"
 launch_label="com.local.RemapKeysForPLLanguage.MenuBar"
+bundle_id="com.local.RemapKeysForPLLanguage.menubar"
 
 source_app="$project_dir/dist/$app_name.app"
 plist_dir="$HOME/Library/LaunchAgents"
 plist_path="$plist_dir/$launch_label.plist"
 uid="$(/usr/bin/id -u)"
 
-target_root="$HOME/Applications"
+target_root="/Applications"
+if [[ ! -w "$target_root" ]]; then
+  target_root="$HOME/Applications"
+fi
 if [[ ! -w "$target_root" ]]; then
   target_root="$HOME/Library/Application Support/Remap Keys for Polish Language"
 fi
@@ -40,13 +44,17 @@ cat > "$plist_path" << PLIST
     <string>$launch_label</string>
     <key>ProgramArguments</key>
     <array>
-        <string>$target_app/Contents/MacOS/$exec_name</string>
+        <string>/usr/bin/open</string>
+        <string>-b</string>
+        <string>$bundle_id</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
 </dict>
 </plist>
 PLIST
+
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$target_app" >/dev/null 2>&1 || true
 
 /bin/launchctl bootout "gui/$uid/$launch_label" >/dev/null 2>&1 || true
 /bin/launchctl bootout "gui/$uid" "$plist_path" >/dev/null 2>&1 || true

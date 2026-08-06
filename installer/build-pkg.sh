@@ -13,7 +13,7 @@ payload_version_file="$payload_dir/package-version.txt"
 app_name="Remap Keys for Polish Language"
 app_path="$out_dir/$app_name.app"
 pkg_name="Remap-Keys-for-Polish-Language-MenuBar"
-pkg_version="${PKG_VERSION:-1.2}"
+pkg_version="${PKG_VERSION:-1.3}"
 pkg_path="$out_dir/$pkg_name-v$pkg_version.pkg"
 
 "$project_dir/scripts/build-app.sh"

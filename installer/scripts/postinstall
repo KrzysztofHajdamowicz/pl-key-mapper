@@ -5,6 +5,7 @@ label="com.local.RemapKeysForPLLanguage.MenuBar"
 app_name="Remap Keys for Polish Language"
 legacy_app_name="Remap Keys for PL Language"
 exec_name="RemapKeysForPLLanguageMenuBar"
+bundle_id="com.local.RemapKeysForPLLanguage.menubar"
 logged_in_user="$(/usr/bin/stat -f%Su /dev/console || true)"
 
 if [[ -z "$logged_in_user" || "$logged_in_user" == "root" ]]; then
@@ -88,19 +89,24 @@ installed_version_for_app() {
 }
 
 install_current() {
-  local installed_app_path="$user_app_path"
-  local install_root="$user_app_root"
+  local installed_app_path="$system_app_path"
+  local install_root="/Applications"
 
-  /bin/mkdir -p "$plist_dir" "$user_app_root" "$local_app_dir"
+  /bin/mkdir -p "$plist_dir" "$install_root" "$user_app_root" "$local_app_dir"
   /usr/sbin/chown "$logged_in_user":staff "$user_app_root" "$local_app_dir" >/dev/null 2>&1 || true
 
   /bin/rm -rf "$user_app_path" "$local_app_path" "$system_app_path" "$legacy_user_app_path" "$legacy_local_app_path" "$legacy_system_app_path"
 
   if ! /usr/bin/tar -xzf "$payload_archive" -C "$install_root" >/dev/null 2>&1; then
-    install_root="$local_app_dir"
-    installed_app_path="$local_app_path"
+    install_root="$user_app_root"
+    installed_app_path="$user_app_path"
     /bin/rm -rf "$installed_app_path"
-    /usr/bin/tar -xzf "$payload_archive" -C "$install_root"
+    if ! /usr/bin/tar -xzf "$payload_archive" -C "$install_root" >/dev/null 2>&1; then
+      install_root="$local_app_dir"
+      installed_app_path="$local_app_path"
+      /bin/rm -rf "$installed_app_path"
+      /usr/bin/tar -xzf "$payload_archive" -C "$install_root"
+    fi
   fi
 
   /usr/sbin/chown -R "$logged_in_user":staff "$installed_app_path" >/dev/null 2>&1 || true
@@ -114,7 +120,9 @@ install_current() {
     <string>$label</string>
     <key>ProgramArguments</key>
     <array>
-        <string>$installed_app_path/Contents/MacOS/$exec_name</string>
+        <string>/usr/bin/open</string>
+        <string>-b</string>
+        <string>$bundle_id</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -125,11 +133,11 @@ PLIST
   /usr/sbin/chown "$logged_in_user":staff "$plist_path"
   /bin/chmod 644 "$plist_path"
   /usr/bin/xattr -dr com.apple.quarantine "$installed_app_path" >/dev/null 2>&1 || true
+  /bin/launchctl asuser "$uid" /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$installed_app_path" >/dev/null 2>&1 || /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$installed_app_path" >/dev/null 2>&1 || true
 
   stop_service
   /bin/launchctl bootstrap "gui/$uid" "$plist_path"
   /bin/launchctl kickstart -k "gui/$uid/$label" >/dev/null 2>&1 || true
-  /bin/launchctl asuser "$uid" /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$installed_app_path" >/dev/null 2>&1 || /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$installed_app_path" >/dev/null 2>&1 || true
   /bin/rm -rf "$payload_root"
 }
 
